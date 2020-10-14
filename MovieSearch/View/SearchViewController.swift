@@ -47,23 +47,8 @@ class SearchViewController: UIViewController {
   override func viewDidLoad(){
     super.viewDidLoad()
     // 1. Set Views: Table Views and SearchBar
-    tableView = UITableView()
-    searchBar = UISearchBar()
-    
-    // 2. Register a custom UITableViewCell
-
-    
-    // 6. Set the delegate and dataSource to self
-    tableView.dataSource = self
-    searchBar.delegate = self
-    
-    // 2. Set up Views, UI
     setupSearchBar()
     setupTableView()
-//    tableView.rowHeight = 180
-    
-    
-    
     
     startSpinner()
     
@@ -89,37 +74,41 @@ class SearchViewController: UIViewController {
   // MARK: - Functions
   
   func setupSearchBar() {
-    
+//    1.
+    searchBar = UISearchBar()
+//    2.
     view.addSubview(searchBar)
+//    3.
     searchBar.translatesAutoresizingMaskIntoConstraints = false
     searchBar.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
     searchBar.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
     searchBar.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+//    4.
+    searchBar.delegate = self
   }
   
   func setupTableView() {
-    
+    // 1. Set Views
+    tableView = UITableView()
     // 2. Register a custom UITableViewCell
     tableView.register(MovieCell.self, forCellReuseIdentifier: MovieCell.id)
 
-    
-    tableView.dataSource = self
-    
     // Height is 20% of the view
     tableView.rowHeight = view.frame.height * 0.2
     
-
-    // 3. add the tableView to the subView
+    // 3. Add the tableView to the subView
     view.addSubview(tableView)
-    
+  
     
     tableView.translatesAutoresizingMaskIntoConstraints = false
-    tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
+    tableView.topAnchor.constraint(equalTo: self.searchBar.bottomAnchor).isActive = true
     tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
     tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     
-    tableView.register(MovieCell.self, forCellReuseIdentifier: MovieCell.id)
+//    6 DataSource
+    tableView.dataSource = self
+
 
   }
   
@@ -159,7 +148,12 @@ extension SearchViewController: UITableViewDataSource {
     cell.textLabel?.text = movies[indexPath.row].title
     cell.detailTextLabel?.text = movies[indexPath.row].year
     if let url = URL(string: movies[indexPath.row].imageURL) {
-      cell.imageView!.kf.setImage(with: url)
+      cell.imageView?.kf.setImage(with: url, placeholder: UIImage(named: "movie_placeholder.jpg"),
+                                  options: [
+                                      .scaleFactor(UIScreen.main.scale),
+                                      .transition(.fade(1)),
+                                      .cacheOriginalImage
+                                  ])
     }
     return cell
   }
