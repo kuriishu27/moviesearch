@@ -20,40 +20,66 @@ class SearchViewController: UIViewController {
     }
   }
   
+  var tableView: UITableView!
+  var searchBar: UISearchBar!
+  var safeArea: UILayoutGuide!
   
-  // MARK: - Init / Assembly
-  required init?(coder: NSCoder) {
-    self.movies = []
-    self.movieFactory = MovieFactoryFromJSONImpl()
-    self.moviePresenter = MoviesPresenterImpl(movieFactory)
-    super.init(coder: coder)
+  init() {
+        self.movies = []
+    //    self.movieFactory = MovieFactoryFromJSONImpl()
+        self.movieFactory = MovieFactoryFromAPI()
+        self.moviePresenter = MoviesPresenterImpl(movieFactory)
+    super.init(nibName: nil, bundle: nil)
   }
   
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
   
-  // MARK: - IBOutlets
-  
-  @IBOutlet weak var searchBar: UISearchBar!
-  @IBOutlet weak var tableView: UITableView!
-  
+
   // MARK: - LifeCycle methods
-  override func viewDidLoad() {
+  
+  override func loadView() {
+    super.loadView()
+    safeArea = view.layoutMarginsGuide
+  }
+  
+  override func viewDidLoad(){
     super.viewDidLoad()
+    // 1. Set Views: Table Views and SearchBar
+    tableView = UITableView()
+    searchBar = UISearchBar()
+    
+    // 2. Register a custom UITableViewCell
+
+    
+    // 6. Set the delegate and dataSource to self
     tableView.dataSource = self
     searchBar.delegate = self
     
-    // UI
-    tableView.rowHeight = 180
+    // 2. Set up Views, UI
+    setupSearchBar()
+    setupTableView()
+//    tableView.rowHeight = 180
+    
+    
+    
+    
     startSpinner()
     
     DispatchQueue.global().async {
       self.moviePresenter.moviesToShow { result in
         switch result {
         case .success(let movies):
+          DispatchQueue.main.async {
           self.movies = movies
           self.stopSpinner()
-        case .failure:
-          // Hanle errors
-          print("Errors")
+          }
+        case .failure (let error):
+          DispatchQueue.main.async {
+            self.stopSpinner()
+            self.showAlert(alertText: "Error", alertMessage: error.localizedDescription)
+          }
         }
       }
     }
@@ -61,6 +87,41 @@ class SearchViewController: UIViewController {
   }
   
   // MARK: - Functions
+  
+  func setupSearchBar() {
+    
+    view.addSubview(searchBar)
+    searchBar.translatesAutoresizingMaskIntoConstraints = false
+    searchBar.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
+    searchBar.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+    searchBar.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+  }
+  
+  func setupTableView() {
+    
+    // 2. Register a custom UITableViewCell
+    tableView.register(MovieCell.self, forCellReuseIdentifier: MovieCell.id)
+
+    
+    tableView.dataSource = self
+    
+    // Height is 20% of the view
+    tableView.rowHeight = view.frame.height * 0.2
+    
+
+    // 3. add the tableView to the subView
+    view.addSubview(tableView)
+    
+    
+    tableView.translatesAutoresizingMaskIntoConstraints = false
+    tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
+    tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+    tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+    
+    tableView.register(MovieCell.self, forCellReuseIdentifier: MovieCell.id)
+
+  }
   
   func updateTableView() {
     tableView.reloadData()
@@ -92,14 +153,14 @@ extension SearchViewController: UITableViewDataSource {
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCellId",
+    let cell = tableView.dequeueReusableCell(withIdentifier: MovieCell.id,
                                              for: indexPath) as! MovieCell
     
-    cell.titleLabel.text = movies[indexPath.row].title
-        cell.year.text = movies[indexPath.row].year
-        if let url = URL(string: movies[indexPath.row].imageURL) {
-          cell.poster.kf.setImage(with: url)
-        }
+    cell.textLabel?.text = movies[indexPath.row].title
+    cell.detailTextLabel?.text = movies[indexPath.row].year
+    if let url = URL(string: movies[indexPath.row].imageURL) {
+      cell.imageView!.kf.setImage(with: url)
+    }
     return cell
   }
   
@@ -108,19 +169,19 @@ extension SearchViewController: UITableViewDataSource {
 // MARK: - UISearchBarDelegate
 
 extension SearchViewController: UISearchBarDelegate {
-   func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-      var textBefore = searchBar.text!
-      var currentText : String {
-        return (textBefore as NSString).replacingCharacters(in: range, with: text)
-      }
+  func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    let textBefore = searchBar.text!
+    var currentText : String {
+      return (textBefore as NSString).replacingCharacters(in: range, with: text)
+    }
     
     self.moviePresenter.filterMovies(filter: currentText) { movies in
       self.movies = movies
       self.updateTableView()
     }
-      return true
-      
-    }
+    return true
+    
+  }
   
 }
 

@@ -10,13 +10,31 @@ import UIKit
 
 class MovieCell: UITableViewCell {
   
-
-  @IBOutlet weak var titleLabel: UILabel!
-  @IBOutlet weak var poster: UIImageView!
-  @IBOutlet weak var year: UILabel!
+  static let id = "movieCell"
   
-  override func awakeFromNib() {
-      super.awakeFromNib()
+  override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+          super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+      }
+
+      required init?(coder aDecoder: NSCoder) {
+          fatalError("init(coder:) has not been implemented")
+      }
+  
+  override func layoutSubviews() {
+    super .layoutSubviews()
+    
+    // Content View
+    contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
+    
+    
+    let aspectRatio: CGFloat = 0.6
+    let aspectRatioConstraint =
+          imageView?.widthAnchor.constraint(
+            equalTo: imageView!.heightAnchor,
+            multiplier: aspectRatio)
+      aspectRatioConstraint?.isActive = true
+
+    
   }
   
 }

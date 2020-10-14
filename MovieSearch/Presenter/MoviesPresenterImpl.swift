@@ -27,8 +27,7 @@ class MoviesPresenterImpl: MoviesPresenter {
           self.movies = movies
           completionHandler(.success(self.movies))
         case .failure(let error):
-          //Handle error
-          print(error)
+          completionHandler(.failure(error))
           
         }
       }
@@ -52,8 +51,8 @@ class MoviesPresenterImpl: MoviesPresenter {
            case .success(let movies):
             self.movies = movies
              completion(.success(.added))
-           case .failure:
-             print ("Error")
+           case .failure(let error):
+            completion(.failure(error))
            }
     }
   
