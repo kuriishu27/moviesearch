@@ -14,17 +14,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    
+//    1.
     window = UIWindow(frame: UIScreen.main.bounds)
-    let navigationController = UINavigationController()
+//    2.
     let searchViewController = SearchViewController()
     searchViewController.title = "Movies"
-    
-    navigationController.addChild(searchViewController)
-   
-    
+    let navigationController = UINavigationController(rootViewController: searchViewController)
+//   3
     window?.rootViewController = navigationController
-    
     window?.makeKeyAndVisible()
     
     return true
