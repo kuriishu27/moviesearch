@@ -19,11 +19,14 @@ final class MovieFactoryFromJSONImpl : MovieFactory {
     // Parse JSON data
     let decoder = JSONDecoder()
        do {
-        let searchResponse = try decoder.decode(SearchResponse.self, from: data)
+
+		let moviesData = try parseSearchJSON(path: "Search", data: data)
+
+        let searchedMovies = try decoder.decode([Movie].self, from: moviesData)
         
         // Code with delay from Network, CoreData, FileSystem... (Mock 2 seconds delay)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-          completionHandler(.success(searchResponse.movies))
+          completionHandler(.success(searchedMovies))
         }
         } catch {
           print(error)
@@ -33,6 +36,14 @@ final class MovieFactoryFromJSONImpl : MovieFactory {
     
     
   }
+
+	func parseSearchJSON(path: String, data: Data) throws -> Data {
+		let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+		let moviesArray = json[path] as! [[String: Any]]
+		let moviesData = try JSONSerialization.data(withJSONObject: moviesArray, options: [])
+
+		return moviesData
+	}
   
   private  func readLocalFile(forName name: String) -> Data? {
       do {

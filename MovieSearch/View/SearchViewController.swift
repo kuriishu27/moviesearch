@@ -12,14 +12,13 @@ import Kingfisher
 class SearchViewController: UIViewController {
   
   // MARK: - Var & Constants
-  let movieFactory: MovieFactory
-  let moviePresenter: MoviesPresenter
+  private let movieFactory: MovieFactory
+  private let moviePresenter: MoviesPresenter
   var movies: [Movie] {
     didSet {
       updateTableView()
     }
   }
-  
   
   // MARK: - Init / Assembly
   required init?(coder: NSCoder) {
@@ -51,7 +50,7 @@ class SearchViewController: UIViewController {
         case .success(let movies):
           self.movies = movies
           self.stopSpinner()
-        case .failure:
+			case .failure:
           // Hanle errors
           print("Errors")
         }
