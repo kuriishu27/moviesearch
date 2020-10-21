@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Movie : Decodable {
+public class Movie {
   let title: String
   let year: String
   let imageURL: String
@@ -19,3 +19,5 @@ public class Movie : Decodable {
     self.imageURL = imageURL
   }
 }
+
+

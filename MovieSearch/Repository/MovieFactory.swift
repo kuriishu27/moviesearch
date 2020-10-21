@@ -45,9 +45,9 @@ extension MovieError: LocalizedError {
   
 }
 enum SuccessCode: String {
-  case added = "OK. Contact was added"
-  case updated = "OK. Contact was updated"
-  case delete = "OK. Contact was deleted"
+  case added = "OK. Movie was added"
+  case updated = "OK. Movie was updated"
+  case delete = "OK. Movie was deleted"
 }
 
 protocol MovieFactory {

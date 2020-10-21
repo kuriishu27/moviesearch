@@ -24,11 +24,11 @@ class SearchViewController: UIViewController {
   var searchBar: UISearchBar!
   var safeArea: UILayoutGuide!
   
-  init() {
+  init(movieFactory: MovieFactory, moviePresenter: MoviesPresenter) {
         self.movies = []
     //    self.movieFactory = MovieFactoryFromJSONImpl()
-        self.movieFactory = MovieFactoryFromAPI()
-        self.moviePresenter = MoviesPresenterImpl(movieFactory)
+        self.movieFactory = movieFactory
+        self.moviePresenter = moviePresenter
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -75,6 +75,7 @@ class SearchViewController: UIViewController {
   
   func setupSearchBar() {
 //    1.
+    // Create form a component
     searchBar = UISearchBar()
 //    2.
     view.addSubview(searchBar)

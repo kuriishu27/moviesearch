@@ -12,12 +12,16 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
   
   var window: UIWindow?
+  
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 //    1.
     window = UIWindow(frame: UIScreen.main.bounds)
 //    2.
-    let searchViewController = SearchViewController()
+    
+    let movieFactory = MovieFactoryFromJSONImpl()
+    let moviePrester = MoviesPresenterImpl(movieFactory)
+    let searchViewController = SearchViewController(movieFactory: movieFactory, moviePresenter: moviePrester)
     searchViewController.title = "Movies"
     let navigationController = UINavigationController(rootViewController: searchViewController)
 //   3
